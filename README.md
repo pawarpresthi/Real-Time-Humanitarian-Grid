@@ -28,7 +28,7 @@
    ```
 
 3. **Open Application**:
-   - Go to [http://localhost:3000](http://localhost:3000)
+   - Go to https://suraksha-signal-seconds-save-life-g.vercel.app/
 
 ## Demo Workflow
 
