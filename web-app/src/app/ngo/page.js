@@ -70,10 +70,10 @@ export default function NGODashboard() {
             await fetch('/api/requests/complete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: selectedRequest.id })
+                body: JSON.stringify({ id: selectedRequest._id || selectedRequest.id })
             });
 
-            setRequests(prev => prev.filter(r => r.id !== selectedRequest.id));
+            setRequests(prev => prev.filter(r => (r._id || r.id) !== (selectedRequest._id || selectedRequest.id)));
             setPoints(prev => prev + 50);
             setNotification(`Help Sent to ${selectedRequest.name}! +50 Points`);
             setSelectedRequest(null);
@@ -138,21 +138,30 @@ export default function NGODashboard() {
                 <div className={styles.requestList}>
                     {loading ? <p>Loading data...</p> : requests.length === 0 ? <p style={{ color: '#64748b', textAlign: 'center', marginTop: '2rem' }}>All Clear. No active alerts.</p> : requests.map(req => (
                         <div
-                            key={req.id}
+                            key={req._id || req.id}
                             className={styles.requestCard}
                             onClick={() => handleMatch(req)}
                         >
                             <div className={styles.cardHeader}>
                                 <span style={{ fontWeight: 600, color: 'white' }}>{req.name}</span>
-                                <span className={`${styles.priorityBadge} ${req.urgency === 'High' ? styles.priorityHigh : styles.priorityStandard}`}>
+                                <span className={`${styles.priorityBadge} ${(req.urgency === 'High' || req.urgency === 'Critical') ? styles.priorityHigh :
+                                    req.urgency === 'Medium' ? styles.priorityMedium : styles.priorityStandard
+                                    }`}>
                                     {req.urgency}
                                 </span>
                             </div>
                             <div className={styles.cardDetails}>
-                                <p>Needs: {req.needs_translated || (req.needs ? req.needs.join(', ') : 'General Aid')}</p>
+                                <p>Needs: {req.needs_translated || (req.needs && req.needs.length > 0 ? req.needs.join(', ') : 'General Aid')}</p>
                                 <p>Loc: {req.location_translated || req.location}</p>
-                                {req.location_translated && req.location_translated !== req.location && (
-                                    <p style={{ fontSize: '0.6rem', color: '#94a3b8', fontStyle: 'italic' }}>Orig: {req.location}</p>
+                                {req.aiReason && (
+                                    <p style={{ fontSize: '0.75rem', color: '#10b981', background: 'rgba(16, 185, 129, 0.1)', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', marginTop: '0.5rem' }}>
+                                        AI: {req.aiReason}
+                                    </p>
+                                )}
+                                {req.reportCount > 1 && (
+                                    <p style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 'bold', marginTop: '0.25rem' }}>
+                                        ⚠️ Verified by {req.reportCount} reports
+                                    </p>
                                 )}
                                 <p style={{ fontSize: '0.7em', marginTop: '0.5rem' }}>{new Date(req.timestamp).toLocaleTimeString()}</p>
                             </div>

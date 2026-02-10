@@ -1,19 +1,22 @@
 import { NextResponse } from 'next/server';
-import { getRequests, completeRequest } from '@/lib/data';
+import connectDB from '@/lib/db';
+import { Request } from '@/lib/models';
 
 export async function POST(req) {
     try {
+        await connectDB();
         const { id } = await req.json();
         if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
-        const success = completeRequest(id);
+        const request = await Request.findByIdAndUpdate(id, { status: 'Completed' }, { new: true });
 
-        if (success) {
-            return NextResponse.json({ success: true });
+        if (request) {
+            return NextResponse.json({ success: true, request });
         } else {
             return NextResponse.json({ error: 'Request not found' }, { status: 404 });
         }
     } catch (e) {
+        console.error("Completion error:", e);
         return NextResponse.json({ error: 'Failed to complete request' }, { status: 500 });
     }
 }

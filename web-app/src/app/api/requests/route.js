@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getRequests, addRequest } from '@/lib/data';
+import connectDB from '@/lib/db';
+import { Request } from '@/lib/models';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -17,110 +18,114 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 export async function GET() {
-    const requests = getRequests();
-    return NextResponse.json(requests);
+    try {
+        await connectDB();
+        const requests = await Request.find({}).sort({ timestamp: -1 });
+        return NextResponse.json(requests);
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to fetch requests' }, { status: 500 });
+    }
 }
 
 export async function POST(req) {
-    const body = await req.json();
+    try {
+        await connectDB();
+        const body = await req.json();
 
-    const allRequests = getRequests();
-    let duplicateOf = null;
+        // 1. Crowd-Source Verification (Duplicate Detection within 200m)
+        if (body.coords) {
+            const activeRequests = await Request.find({ status: { $ne: 'Completed' } });
+            for (const existing of activeRequests) {
+                if (existing.coords) {
+                    const dist = calculateDistance(
+                        body.coords.lat, body.coords.lng,
+                        existing.coords.lat, existing.coords.lng
+                    );
 
-    if (body.coords) {
-        for (const existing of allRequests) {
-            if (existing.coords && existing.status !== 'Completed') {
-                const dist = calculateDistance(
-                    body.coords.lat, body.coords.lng,
-                    existing.coords.lat, existing.coords.lng
-                );
-
-                // If within 200 meters and similar need - it's a crowd report
-                if (dist < 200) {
-                    existing.reportCount = (existing.reportCount || 1) + 1;
-                    existing.urgency = existing.reportCount > 3 ? 'Critical' : 'High';
-                    duplicateOf = existing;
-                    break;
+                    if (dist < 200) {
+                        existing.reportCount = (existing.reportCount || 1) + 1;
+                        existing.urgency = existing.reportCount > 3 ? 'Critical' : 'High';
+                        await existing.save();
+                        return NextResponse.json({
+                            ...existing.toObject(),
+                            message: 'Existing alert escalated due to crowd verification.'
+                        }, { status: 200 });
+                    }
                 }
             }
         }
-    }
 
-    if (duplicateOf) {
-        return NextResponse.json({ ...duplicateOf, message: 'Existing alert escalated due to crowd verification.' }, { status: 200 });
-    }
+        const newRequestData = {
+            ...body,
+            reportCount: 1,
+            status: 'Pending',
+            timestamp: new Date()
+        };
 
-    const newRequest = addRequest(body);
-    newRequest.reportCount = 1;
+        // 2. AI/NLP Layer for Prioritization
+        if (process.env.GEMINI_API_KEY) {
+            try {
+                const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    // AI/NLP Layer for Prioritization
-    if (process.env.GEMINI_API_KEY) {
-        try {
-            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                const prompt = `Analyze this disaster request:
+                Needs: ${body.needs ? body.needs.join(', ') : 'General'}
+                Location: ${body.location}
+                Categorize priority as "Critical", "High", "Medium", or "Standard" based on life-threat levels (Injuries/Medical > Trapped/Shelter > Food/Water). 
+                Provide reasoning in one short sentence.
+                Format response as JSON: {"priority": "Critial|High|Medium|Standard", "reason": "..."}`;
 
-            const prompt = `Analyze this disaster request:
-            Needs: ${body.needs ? body.needs.join(', ') : 'General'}
-            Location: ${body.location}
-            Categorize priority as "Critical", "High", "Medium", or "Standard" based on life-threat levels (Injuries/Medical > Trapped/Shelter > Food/Water). 
-            Provide reasoning.
-            Format response as JSON: {"priority": "...", "reason": "..."}`;
-
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            const aiData = JSON.parse(response.text().replace(/```json|```/g, '').trim());
-            newRequest.urgency = aiData.priority;
-            newRequest.aiReason = aiData.reason;
-        } catch (err) {
-            console.error("AI Prioritization failed", err);
-            // Fallback rules
-            if (body.needs && body.needs.includes('Medical')) newRequest.urgency = 'Critical';
-            else if (body.needs && body.needs.includes('Shelter')) newRequest.urgency = 'High';
-            else newRequest.urgency = 'Standard';
-        }
-    } else {
-        // Fallback Heuristic Prioritization (medical > food > shelter)
-        const needsText = (body.needs ? body.needs.join(' ') : '').toLowerCase();
-
-        if (needsText.includes('medical') || needsText.includes('doctor') || needsText.includes('blood')) {
-            newRequest.urgency = 'Critical';
-        } else if (needsText.includes('shelter') || needsText.includes('trapped')) {
-            newRequest.urgency = 'High';
-        } else if (needsText.includes('food') || needsText.includes('water')) {
-            newRequest.urgency = 'Medium';
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const aiData = JSON.parse(response.text().replace(/```json|```/g, '').trim());
+                newRequestData.urgency = aiData.priority;
+                newRequestData.aiReason = aiData.reason;
+            } catch (err) {
+                console.error("AI Prioritization failed", err);
+                // Fallback rules
+                if (body.needs && body.needs.includes('Medical')) newRequestData.urgency = 'Critical';
+                else if (body.needs && body.needs.includes('Shelter')) newRequestData.urgency = 'High';
+                else newRequestData.urgency = 'Standard';
+            }
         } else {
-            newRequest.urgency = 'Standard';
+            // Fallback Heuristic
+            const needsText = (body.needs ? body.needs.join(' ') : '').toLowerCase();
+            if (needsText.includes('medical')) newRequestData.urgency = 'Critical';
+            else if (needsText.includes('shelter')) newRequestData.urgency = 'High';
+            else if (needsText.includes('food')) newRequestData.urgency = 'Medium';
+            else newRequestData.urgency = 'Standard';
         }
-    }
 
-    // Auto-translation for NGOs
-    if (process.env.GEMINI_API_KEY) {
-        try {
-            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // 3. Auto-translation for NGOs
+        if (process.env.GEMINI_API_KEY) {
+            try {
+                const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-            const prompt = `Translate the following disaster request details to English for NGO coordination. 
-            Original Language: ${body.language || 'Detect'}
-            Location: ${body.location}
-            Needs: ${body.needs ? body.needs.join(', ') : 'None'}
-            Format response as JSON: {"translatedLocation": "...", "translatedNeeds": "..."}`;
+                const prompt = `Translate to English for NGO coordination:
+                Location: ${body.location}
+                Needs: ${body.needs ? body.needs.join(', ') : 'None'}
+                Format: {"translatedLocation": "...", "translatedNeeds": "..."}`;
 
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            const text = response.text().replace(/```json|```/g, '').trim();
-            const translations = JSON.parse(text);
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const translations = JSON.parse(response.text().replace(/```json|```/g, '').trim());
 
-            newRequest.location_translated = translations.translatedLocation;
-            newRequest.needs_translated = translations.translatedNeeds;
-        } catch (err) {
-            console.error("Translation failed", err);
-            newRequest.location_translated = body.location; // Fallback
-            newRequest.needs_translated = body.needs ? body.needs.join(', ') : '';
+                newRequestData.location_translated = translations.translatedLocation;
+                newRequestData.needs_translated = translations.translatedNeeds;
+            } catch (err) {
+                newRequestData.location_translated = body.location;
+                newRequestData.needs_translated = body.needs ? body.needs.join(', ') : '';
+            }
+        } else {
+            newRequestData.location_translated = body.location;
+            newRequestData.needs_translated = body.needs ? body.needs.join(', ') : '';
         }
-    } else {
-        newRequest.location_translated = body.location;
-        newRequest.needs_translated = body.needs ? body.needs.join(', ') : '';
-    }
 
-    return NextResponse.json(newRequest, { status: 201 });
+        const newRequest = await Request.create(newRequestData);
+        return NextResponse.json(newRequest, { status: 201 });
+    } catch (error) {
+        console.error("Request POST error:", error);
+        return NextResponse.json({ error: 'Failed to create request' }, { status: 500 });
+    }
 }

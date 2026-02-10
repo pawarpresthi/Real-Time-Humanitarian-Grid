@@ -68,16 +68,17 @@ export default function Map({ requests, resources, onMarkerClick, center }) {
             {requests.map((req) => (
                 req.coords && (
                     <Marker
-                        key={req.id}
+                        key={req._id || req.id}
                         position={[req.coords.lat, req.coords.lng]}
-                        icon={req.urgency === 'High' ? redIcon : yellowIcon}
+                        icon={(req.urgency === 'High' || req.urgency === 'Critical') ? redIcon :
+                            req.urgency === 'Medium' ? yellowIcon : yellowIcon}
                         eventHandlers={{
                             click: () => onMarkerClick(req, false),
                         }}
                     >
                         <Popup>
                             <strong>{req.name}</strong><br />
-                            Needs: {req.needs.join(', ')}<br />
+                            Needs: {req.needs ? req.needs.join(', ') : 'General'}<br />
                             Urgency: {req.urgency}
                         </Popup>
                     </Marker>
@@ -88,7 +89,7 @@ export default function Map({ requests, resources, onMarkerClick, center }) {
             {resources.map((res) => (
                 res.coords && (
                     <Marker
-                        key={res.id}
+                        key={res._id || res.id}
                         position={[res.coords.lat, res.coords.lng]}
                         icon={greenIcon}
                         eventHandlers={{
@@ -97,7 +98,7 @@ export default function Map({ requests, resources, onMarkerClick, center }) {
                     >
                         <Popup>
                             <strong>{res.organization}</strong><br />
-                            Inventory: {res.inventory.join(', ')}
+                            Inventory: {res.inventory ? res.inventory.join(', ') : 'None'}
                         </Popup>
                     </Marker>
                 )
