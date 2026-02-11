@@ -1,4 +1,4 @@
-# Suraksha Signal - Disaster Relief Coordination (Live)
+# Real Time Humanitarian Grid(Live)
 
 **Suraksha Signal** connects victims, NGOs, and volunteers in real-time during disasters.
 
