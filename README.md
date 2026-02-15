@@ -4,13 +4,13 @@
 
  **Incident Dashboard**
 
-<img width="1917" height="1016" alt="Screenshot 2026-02-15 224002" src="https://github.com/user-attachments/assets/35fc575d-3cc3-46a1-b1ff-d5cf8d04c36e" />
-
-<img width="1912" height="1000" alt="Screenshot 2026-02-15 223249" src="https://github.com/user-attachments/assets/96bf1644-af77-4b42-a065-a2589e7c79d2" />
+<img width="1906" height="1019" alt="Screenshot 2026-02-15 223125" src="https://github.com/user-attachments/assets/73a88a22-1e82-4930-8667-ad51ff58ac17" />
 
 <img width="1909" height="1021" alt="Screenshot 2026-02-15 223215" src="https://github.com/user-attachments/assets/5a66aee0-d975-4742-aa73-ab0177d18243" />
 
-<img width="1906" height="1019" alt="Screenshot 2026-02-15 223125" src="https://github.com/user-attachments/assets/73a88a22-1e82-4930-8667-ad51ff58ac17" />
+<img width="1917" height="1016" alt="Screenshot 2026-02-15 224002" src="https://github.com/user-attachments/assets/d84d0683-8558-4497-b66b-545fd2d90322" />
+
+<img width="1912" height="1000" alt="Screenshot 2026-02-15 223249" src="https://github.com/user-attachments/assets/eb7dbf3a-008e-4b7d-befc-2400a2933460" />
 
 - **Multilingual Support**: Select from  regional languages.
 - **Victim Request Portal**: Minimalistic form to request food, medicine, or shelter. Auto-geolocation.
@@ -53,6 +53,27 @@
 
 3. **Public Display**:
    - View flashing critical alerts impacting the community.
+  
+🎯 **Vision**
+
+Suraksha Signal is more than a project—it’s a social impact platform. By blending technology with inclusivity, it aims to ensure that no voice goes unheard in times of crisis.
+
+🤝 **Contributing**
+
+ We welcome contributions!
+
+- Fork the repo
+- Create a feature branch
+- Submit a pull request
+
+🙏 **Acknowledgements**
+
+- Shatakshi Verma  – for ideation and support
+- Open-source communities – React, Node.js, MongoDB
+- Volunteers & responders – whose courage motivates this project
+
+📜 **License**
+MIT License – free to use, modify, and distribute.
 
 ## Troubleshooting
 - If `npm install` fails, ensure you have internet access and Node.js installed.
