@@ -3,16 +3,15 @@
  **Suraksha Signal** is a disaster relief coordination platform designed to connect victims, volunteers, and responders in real time.
 
  **Incident Dashboard**
- 
- <img width="1917" height="1016" alt="Screenshot 2026-02-15 224002" src="https://github.com/user-attachments/assets/239027c4-4ca6-4785-b123-ef7e50448fb5" />
- 
- <img width="1912" height="1000" alt="Screenshot 2026-02-15 223249" src="https://github.com/user-attachments/assets/624ed51c-3da2-4f17-9b7f-e50839fe143b" />
- 
- <img width="1909" height="1021" alt="Screenshot 2026-02-15 223215" src="https://github.com/user-attachments/assets/b2055885-613a-4370-80dd-2eec172a44b9" />
- 
- <img width="1906" height="1019" alt="Screenshot 2026-02-15 223125" src="https://github.com/user-attachments/assets/40291484-48f9-42ef-b982-3c61629415c6" />
 
-## Features
+<img width="1917" height="1016" alt="Screenshot 2026-02-15 224002" src="https://github.com/user-attachments/assets/611d2511-a305-4ead-81dc-584197eb846d" />
+
+<img width="1912" height="1000" alt="Screenshot 2026-02-15 223249" src="https://github.com/user-attachments/assets/45c11638-0129-4d91-8207-bbfbbab7cad6" />
+
+<img width="1909" height="1021" alt="Screenshot 2026-02-15 223215" src="https://github.com/user-attachments/assets/3579eced-8732-47c6-9668-9c956ccd7c21" />
+
+<img width="1906" height="1019" alt="Screenshot 2026-02-15 223125" src="https://github.com/user-attachments/assets/0f26c912-bd80-49e9-a82f-23e7cc502711" />
+
 - **Multilingual Support**: Select from  regional languages.
 - **Victim Request Portal**: Minimalistic form to request food, medicine, or shelter. Auto-geolocation.
 - **NGO Command Center**: Dashboard to match requests with resources (Green pins) using a map interface.
