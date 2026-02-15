@@ -4,13 +4,13 @@
 
  **Incident Dashboard**
 
-<img width="1917" height="1016" alt="Screenshot 2026-02-15 224002" src="https://github.com/user-attachments/assets/611d2511-a305-4ead-81dc-584197eb846d" />
+<img width="1917" height="1016" alt="Screenshot 2026-02-15 224002" src="https://github.com/user-attachments/assets/35fc575d-3cc3-46a1-b1ff-d5cf8d04c36e" />
 
-<img width="1912" height="1000" alt="Screenshot 2026-02-15 223249" src="https://github.com/user-attachments/assets/45c11638-0129-4d91-8207-bbfbbab7cad6" />
+<img width="1912" height="1000" alt="Screenshot 2026-02-15 223249" src="https://github.com/user-attachments/assets/96bf1644-af77-4b42-a065-a2589e7c79d2" />
 
-<img width="1909" height="1021" alt="Screenshot 2026-02-15 223215" src="https://github.com/user-attachments/assets/3579eced-8732-47c6-9668-9c956ccd7c21" />
+<img width="1909" height="1021" alt="Screenshot 2026-02-15 223215" src="https://github.com/user-attachments/assets/5a66aee0-d975-4742-aa73-ab0177d18243" />
 
-<img width="1906" height="1019" alt="Screenshot 2026-02-15 223125" src="https://github.com/user-attachments/assets/0f26c912-bd80-49e9-a82f-23e7cc502711" />
+<img width="1906" height="1019" alt="Screenshot 2026-02-15 223125" src="https://github.com/user-attachments/assets/73a88a22-1e82-4930-8667-ad51ff58ac17" />
 
 - **Multilingual Support**: Select from  regional languages.
 - **Victim Request Portal**: Minimalistic form to request food, medicine, or shelter. Auto-geolocation.
