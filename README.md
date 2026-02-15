@@ -1,6 +1,16 @@
 # Real Time Humanitarian Grid(Live)
 
-**Suraksha Signal** connects victims, NGOs, and volunteers in real-time during disasters.
+ **Suraksha Signal** is a disaster relief coordination platform designed to connect victims, volunteers, and responders in real time.
+
+ **Incident Dashboard**
+ 
+ <img width="1917" height="1016" alt="Screenshot 2026-02-15 224002" src="https://github.com/user-attachments/assets/239027c4-4ca6-4785-b123-ef7e50448fb5" />
+ 
+ <img width="1912" height="1000" alt="Screenshot 2026-02-15 223249" src="https://github.com/user-attachments/assets/624ed51c-3da2-4f17-9b7f-e50839fe143b" />
+ 
+ <img width="1909" height="1021" alt="Screenshot 2026-02-15 223215" src="https://github.com/user-attachments/assets/b2055885-613a-4370-80dd-2eec172a44b9" />
+ 
+ <img width="1906" height="1019" alt="Screenshot 2026-02-15 223125" src="https://github.com/user-attachments/assets/40291484-48f9-42ef-b982-3c61629415c6" />
 
 ## Features
 - **Multilingual Support**: Select from  regional languages.
