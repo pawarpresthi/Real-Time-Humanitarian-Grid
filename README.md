@@ -68,7 +68,7 @@ Suraksha Signal is more than a project—it’s a social impact platform. By ble
 
 🙏 **Acknowledgements**
 
-- Shatakshi Verma  – for ideation and support
+- Shatakshi – for ideation and support
 - Open-source communities – React, Node.js, MongoDB
 - Volunteers & responders – whose courage motivates this project
 
